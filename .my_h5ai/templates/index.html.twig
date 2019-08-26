@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My_H5AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            padding-top: 2rem;
+        }
+
+        .h5ai-tree {
+            overflow: auto;
+            height: 40rem;
+        }
+
+        .h5ai-tree ul {
+            list-style: none;
+        }
+
+        .h5ai-tree ul > li > ul {
+            padding-left: 1.5em;
+        }
+    </style>
+</head>
+<body>
+<div class="ui stackable grid container">
+    <div class="sixteen wide column">
+        <div class="ui breadcrumb">
+            {% if request_path == '/' %}
+                <strong class="section">
+                    <i class="black globe icon"></i>
+                    <span>Server Root</span>
+                </strong>
+            {% else %}
+                <a class="section" href="{{ relative_script_dir }}">
+                    <i class="black globe icon"></i>
+                    <span>Server Root</span>
+                </a>
+                {% if path_breadcrumb is not empty %}
+                    <i class="right angle icon divider"></i>
+                {% endif %}
+                {% set bc_path = relative_script_dir %}
+                {% for part in path_breadcrumb %}
+                    {% if part is not empty %}
+                        {% set bc_path = bc_path ~ part ~ '/' %}
+                        {% if not loop.last %}
+                            <a class="section" href="{{ bc_path }}">{{ part }}</a>
+                            <i class="right angle icon divider"></i>
+                        {% else %}
+                            <strong class="section">{{ part }}</strong>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="six wide column">
+        <aside class="ui segment">
+            <div class="h5ai-tree">
+                <ul>
+                    <li>
+                        <a href="{{ relative_script_dir }}">
+                            <i class="black globe icon"></i>
+                            <span>{{ relative_script_dir }}</span>
+                        </a>
+                        {% if directory_tree is not empty %}
+                            {% include 'tree.html.twig' with { links: directory_tree, current_dir: request_path } %}
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+    <div class="ten wide column">
+        <main">
+        {% if current_dir is not empty %}
+            <table class="ui sortable selectable table">
+                <thead>
+                <tr>
+                    <th>File name</th>
+                    <th>Last modified</th>
+                    <th>Size</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entry in current_dir %}
+                    {% if (request_path == '/' and entry.name != '..') or (request_path != '/') %}
+                        <tr>
+                            <td>
+                                {% if entry.type == 'directory' %}
+                                    <i class="yellow folder icon"></i>
+                                {% else %}
+                                    <i class="{{ entry.name|file_icon }} icon"></i>
+                                {% endif %}
+                                <a href="{{ entry.name }}">{{ entry.name }}</a>
+                            </td>
+                            <td>{{ entry.mtime|date }}</td>
+                            <td>{{ entry.size }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+        </main>
+    </div>
+</div>
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"
+        integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI="
+        crossorigin="anonymous"></script>
+<script src="https://semantic-ui.com/javascript/library/tablesort.js"></script>
+<script>
+    $('.ui.sortable.table').tablesort();
+</script>
+</body>
+</html>

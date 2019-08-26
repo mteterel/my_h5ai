@@ -1,0 +1,26 @@
+<ul>
+    {% for link in links %}
+        {% set ui_active = false %}
+        <li>
+            {% if '/my_h5ai' ~ current_dir starts with link.full_path %}
+                {% set ui_active = true %}
+            {% endif %}
+            <a href="{{ link.full_path }}">
+                {% if link.dirs is not empty %}
+                    <i class="dropdown icon"></i>
+                {% else %}
+                    <i class="icon"></i>
+                {% endif %}
+                <i class="{{ ui_active ? 'pink folder open' : 'yellow folder' }} icon"></i>
+                {% if '/my_h5ai' ~ current_dir == link.full_path %}
+                    <strong>{{ link.name }}</strong>
+                {% else %}
+                    <span>{{ link.name }}</span>
+                {% endif %}
+            </a>
+            {% if link.dirs is not empty %}
+                {% include 'tree.html.twig' with { links: link.dirs } %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
