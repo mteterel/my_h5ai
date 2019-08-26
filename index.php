@@ -52,7 +52,9 @@ function h5ai_get_dir_contents(string $path)
         }
         closedir($handle);
     }
-    ksort($result);
+    usort($result, function($a, $b) {
+        return ($a['name'] > $b['name']) || $a['type'] !== 'directory' && $b['type'] === 'directory';
+    });
     return $result;
 }
 
