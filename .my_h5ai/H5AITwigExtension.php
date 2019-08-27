@@ -8,14 +8,8 @@ class H5AITwigExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('file_icon', [$this, 'getFileIcon']),
-            new TwigFilter('dir_filter', [$this, 'filterDirectory'])
+            new TwigFilter('file_icon', [$this, 'getFileIcon'])
         ];
-    }
-
-    public function filterDirectory(string $path) {
-        $result = preg_replace('/(\/\/)+/', '/', $path);
-
     }
 
     public function getFileIcon(string $path) {

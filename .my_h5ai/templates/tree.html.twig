@@ -1,7 +1,7 @@
 <ul>
     {% for link in links %}
         {% set ui_active = false %}
-        {% if '/my_h5ai' ~ current_dir starts with link.full_path %}
+        {% if relative_script_dir ~ current_dir starts with link.full_path %}
             {% set ui_active = true %}
         {% endif %}
         <li class="tree-item {{ link.dirs is not empty ? 'collapsible' }} {{ ui_active ? 'active' }}">

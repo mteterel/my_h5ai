@@ -96,5 +96,5 @@ echo $twig->render('index.html.twig', [
     'directory_tree' => $dir_tree,
     'current_dir' => $dir_contents,
     'path_breadcrumb' => explode('/', trim($_SERVER['PATH_INFO'], '/')),
-    'relative_script_dir' => $relative_dir . '/'
+    'relative_script_dir' => $relative_dir
 ]);

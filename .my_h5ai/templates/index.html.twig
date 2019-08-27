@@ -27,7 +27,7 @@
         }
 
         .h5ai-tree ul > li > ul {
-            padding-left: 1.5em;
+            padding-left: 1rem;
         }
 
         .h5ai-tree .tree-item.collapsible > .dropdown.icon {
@@ -86,9 +86,9 @@
             <div class="h5ai-tree">
                 <ul>
                     <li>
-                        <a href="{{ relative_script_dir }}">
+                        <a href="{{ relative_script_dir ~ '/' }}">
                             <i class="orange open folder icon"></i>
-                            <span>{{ relative_script_dir }}</span>
+                            <span>/</span>
                         </a>
                         {% if directory_tree is not empty %}
                             {% include 'tree.html.twig' with { links: directory_tree, current_dir: request_path } %}
