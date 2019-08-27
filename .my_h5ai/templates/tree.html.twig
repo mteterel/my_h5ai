@@ -1,17 +1,17 @@
 <ul>
     {% for link in links %}
         {% set ui_active = false %}
-        <li>
-            {% if '/my_h5ai' ~ current_dir starts with link.full_path %}
-                {% set ui_active = true %}
+        {% if '/my_h5ai' ~ current_dir starts with link.full_path %}
+            {% set ui_active = true %}
+        {% endif %}
+        <li class="tree-item {{ link.dirs is not empty ? 'collapsible' }} {{ ui_active ? 'active' }}">
+            {% if link.dirs is not empty %}
+                <i class="dropdown icon"></i>
+            {% else %}
+                <i class="icon"></i>
             {% endif %}
             <a href="{{ link.full_path }}">
-                {% if link.dirs is not empty %}
-                    <i class="dropdown icon"></i>
-                {% else %}
-                    <i class="icon"></i>
-                {% endif %}
-                <i class="{{ ui_active ? 'pink folder open' : 'yellow folder' }} icon"></i>
+                <i class="{{ ui_active ? 'orange folder open' : 'yellow folder' }} icon"></i>
                 {% if '/my_h5ai' ~ current_dir == link.full_path %}
                     <strong>{{ link.name }}</strong>
                 {% else %}

@@ -53,7 +53,7 @@ function h5ai_get_dir_contents(string $path)
         closedir($handle);
     }
     usort($result, function($a, $b) {
-        return ($a['name'] > $b['name']) || $a['type'] !== 'directory' && $b['type'] === 'directory';
+        return $a['type'] !== $b['type'] ? ($b['type'] == 'directory') : ($a['name'] > $b['name']);
     });
     return $result;
 }

@@ -25,6 +25,8 @@ class H5AITwigExtension extends AbstractExtension
                 return 'orange html5';
             case 'json':
                 return 'blue code';
+            case 'cpp':
+                return 'code file outline';
             case 'css':
                 return 'blue css3';
             case 'less':
@@ -41,7 +43,7 @@ class H5AITwigExtension extends AbstractExtension
             case 'xlsx':
                 return 'green file excel';
             case 'pptx':
-                return 'brown file powerpoint';
+                return 'red file powerpoint';
             case 'ogg':
             case 'wmv':
             case 'wav':
@@ -49,13 +51,21 @@ class H5AITwigExtension extends AbstractExtension
                 return 'file audio outline';
             case 'zip':
             case 'tar':
-                return 'yellow archive file';
+                return 'brown archive file';
             case 'pdf':
                 return 'red pdf file';
             case 'mp4':
                 return 'file video outline';
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'gif':
+            case 'bmp':
+                return 'file image outline';
+            case 'txt':
+                return 'file alternate outline';
             default:
-                return 'blue file outline';
+                return 'file outline';
         }
     }
 }

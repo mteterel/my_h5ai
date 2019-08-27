@@ -15,7 +15,7 @@
 
         .h5ai-tree {
             overflow: auto;
-            height: 40rem;
+            max-height: 40rem;
         }
 
         .h5ai-tree ul {
@@ -25,47 +25,62 @@
         .h5ai-tree ul > li > ul {
             padding-left: 1.5em;
         }
+
+        .h5ai-tree .tree-item.collapsible > .dropdown.icon {
+            cursor: pointer;
+        }
+
+        .h5ai-tree .tree-item.collapsible:not(.active) > ul {
+            display: none;
+        }
+
+        .h5ai-tree .tree-item.collapsible:not(.active) > .dropdown.icon::before {
+            content: '\f0da';
+        }
+
+        .h5ai-tree .tree-item.collapsible.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
 <div class="ui stackable grid container">
     <div class="sixteen wide column">
-        <div class="ui breadcrumb">
-            {% if request_path == '/' %}
-                <strong class="section">
-                    <i class="black globe icon"></i>
-                    <span>Server Root</span>
-                </strong>
-            {% else %}
-                <a class="section" href="{{ relative_script_dir }}">
-                    <i class="black globe icon"></i>
-                    <span>Server Root</span>
-                </a>
-                {% if path_breadcrumb is not empty %}
-                    <i class="right angle icon divider"></i>
-                {% endif %}
-                {% set bc_path = relative_script_dir %}
-                {% for part in path_breadcrumb %}
-                    {% if part is not empty %}
-                        {% set bc_path = bc_path ~ part ~ '/' %}
-                        {% if not loop.last %}
-                            <a class="section" href="{{ bc_path }}">{{ part }}</a>
-                            <i class="right angle icon divider"></i>
-                        {% else %}
-                            <strong class="section">{{ part }}</strong>
-                        {% endif %}
+        <div class="ui segment">
+            <div class="ui breadcrumb">
+                {% if request_path == '/' %}
+                    <strong>
+                        <i class="globe icon"></i>
+                        <span>Server Root</span>
+                    </strong>
+                {% else %}
+                    {% if path_breadcrumb is not empty %}
+                        <a href="{{ relative_script_dir }}"><i class="globe icon"></i></a>
+                        <div class="divider"> / </div>
                     {% endif %}
-                {% endfor %}
-            {% endif %}
+                    {% set bc_path = relative_script_dir %}
+                    {% for part in path_breadcrumb %}
+                        {% if part is not empty %}
+                            {% set bc_path = bc_path ~ part ~ '/' %}
+                            {% if not loop.last %}
+                                <a class="section" href="{{ bc_path }}">{{ part }}</a>
+                                <div class="divider"> / </div>
+                            {% else %}
+                                <strong class="section">{{ part }}</strong>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="six wide column">
-        <aside class="ui segment">
+
             <div class="h5ai-tree">
                 <ul>
                     <li>
                         <a href="{{ relative_script_dir }}">
-                            <i class="black globe icon"></i>
+                            <i class="pink open folder icon"></i>
                             <span>{{ relative_script_dir }}</span>
                         </a>
                         {% if directory_tree is not empty %}
@@ -77,19 +92,26 @@
         </aside>
     </div>
     <div class="ten wide column">
-        <main">
-        {% if current_dir is not empty %}
-            <table class="ui sortable selectable table">
-                <thead>
-                <tr>
-                    <th>File name</th>
-                    <th>Last modified</th>
-                    <th>Size</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for entry in current_dir %}
-                    {% if (request_path == '/' and entry.name != '..') or (request_path != '/') %}
+        <main>
+            {% if current_dir|length <= 1 %}
+                <div class="ui placeholder segment">
+                    <div class="ui icon header">
+                        No files are in this directory.
+                    </div>
+                    <a class="ui primary button" href="{{ '..' }}">
+                        <i class="left arrow icon"></i>To parent directory</a>
+                </div>
+            {% elseif current_dir is not empty %}
+                <table class="ui very basic sortable selectable table">
+                    <thead>
+                    <tr>
+                        <th>File name</th>
+                        <th>Last modified</th>
+                        <th>Size</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for entry in current_dir %}
                         <tr>
                             <td>
                                 {% if entry.type == 'directory' %}
@@ -102,11 +124,10 @@
                             <td>{{ entry.mtime|date }}</td>
                             <td>{{ entry.size }}</td>
                         </tr>
-                    {% endif %}
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
         </main>
     </div>
 </div>
@@ -121,6 +142,9 @@
 <script src="https://semantic-ui.com/javascript/library/tablesort.js"></script>
 <script>
     $('.ui.sortable.table').tablesort();
+    $('.h5ai-tree .tree-item.collapsible > .dropdown.icon').click(function() {
+        $(this).parent('.tree-item.collapsible').toggleClass('active');
+    });
 </script>
 </body>
 </html>
