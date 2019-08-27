@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>My_H5AI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+          integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
+    <link rel="stylesheet"
+          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/atom-one-light.min.css">
     <style>
         * {
             padding: 0;
@@ -41,6 +45,10 @@
         .h5ai-tree .tree-item.collapsible.active {
             display: block;
         }
+
+        #h5ai-raw-file-preview pre {
+            overflow: auto;
+         }
     </style>
 </head>
 <body>
@@ -74,13 +82,12 @@
             </div>
         </div>
     </div>
-    <div class="six wide column">
-
+    <div class="five wide column">
             <div class="h5ai-tree">
                 <ul>
                     <li>
                         <a href="{{ relative_script_dir }}">
-                            <i class="pink open folder icon"></i>
+                            <i class="orange open folder icon"></i>
                             <span>{{ relative_script_dir }}</span>
                         </a>
                         {% if directory_tree is not empty %}
@@ -91,7 +98,7 @@
             </div>
         </aside>
     </div>
-    <div class="ten wide column">
+    <div class="eleven wide column">
         <main>
             {% if current_dir|length <= 1 %}
                 <div class="ui placeholder segment">
@@ -116,10 +123,11 @@
                             <td>
                                 {% if entry.type == 'directory' %}
                                     <i class="yellow folder icon"></i>
+                                    <a href="{{ entry.name }}">{{ entry.name }}</a>
                                 {% else %}
                                     <i class="{{ entry.name|file_icon }} icon"></i>
+                                    <a href="{{ entry.name }}" class="h5ai-item-previable" data-filename="{{ entry.name }}">{{ entry.name }}</a>
                                 {% endif %}
-                                <a href="{{ entry.name }}">{{ entry.name }}</a>
                             </td>
                             <td>{{ entry.mtime|date }}</td>
                             <td>{{ entry.size }}</td>
@@ -131,6 +139,20 @@
         </main>
     </div>
 </div>
+<div id="h5ai-image-preview" class="ui small modal">
+    <i class="close icon"></i>
+    <div class="header"></div>
+    <div class="image content">
+        <img class="ui fluid image">
+    </div>
+</div>
+<div id="h5ai-raw-file-preview" class="ui modal">
+    <i class="close icon"></i>
+    <div class="header"></div>
+    <div class="content">
+        <pre><code></code></pre>
+    </div>
+</div>
 <script
         src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -140,10 +162,33 @@
         integrity="sha256-t8GepnyPmw9t+foMh3mKNvcorqNHamSKtKRxxpUEgFI="
         crossorigin="anonymous"></script>
 <script src="https://semantic-ui.com/javascript/library/tablesort.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
 <script>
     $('.ui.sortable.table').tablesort();
     $('.h5ai-tree .tree-item.collapsible > .dropdown.icon').click(function() {
         $(this).parent('.tree-item.collapsible').toggleClass('active');
+    });
+    $('.h5ai-item-previable').click(async function(e) {
+        const SUPPORTED_PREVIEWS = ['jpg', 'jpeg', 'png', 'gif', 'txt', 'json', 'xml'];
+        const fileExtension = $(this).attr('data-filename').split('.').pop();
+        if (SUPPORTED_PREVIEWS.includes(fileExtension)) {
+            e.preventDefault();
+            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                $('#h5ai-image-preview > .header').text($(this).attr('data-filename'));
+                $('#h5ai-image-preview img').attr('src', $(this).attr('data-filename'));
+                $('#h5ai-image-preview').modal('show');
+            }
+            else if(['txt', 'json', 'xml'].includes(fileExtension)) {
+                $('#h5ai-raw-file-preview > .header').text($(this).attr('data-filename'));
+                let data = await (await fetch($(this).attr('data-filename'))).text();
+                let previewElement = $('#h5ai-raw-file-preview');
+                let codeElement = previewElement.find('code');
+                codeElement.text(data);
+                let hlData = hljs.highlightAuto(codeElement.text()).value;
+                codeElement.html(hlData);
+                previewElement.modal('show');
+            }
+        }
     });
 </script>
 </body>

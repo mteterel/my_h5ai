@@ -8,8 +8,14 @@ class H5AITwigExtension extends AbstractExtension
     public function getFilters()
     {
         return [
-            new TwigFilter('file_icon', [$this, 'getFileIcon'])
+            new TwigFilter('file_icon', [$this, 'getFileIcon']),
+            new TwigFilter('dir_filter', [$this, 'filterDirectory'])
         ];
+    }
+
+    public function filterDirectory(string $path) {
+        $result = preg_replace('/(\/\/)+/', '/', $path);
+
     }
 
     public function getFileIcon(string $path) {
@@ -24,6 +30,7 @@ class H5AITwigExtension extends AbstractExtension
             case 'htm':
                 return 'orange html5';
             case 'json':
+            case 'xml':
                 return 'blue code';
             case 'cpp':
                 return 'code file outline';

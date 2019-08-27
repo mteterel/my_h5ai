@@ -5,11 +5,7 @@
             {% set ui_active = true %}
         {% endif %}
         <li class="tree-item {{ link.dirs is not empty ? 'collapsible' }} {{ ui_active ? 'active' }}">
-            {% if link.dirs is not empty %}
-                <i class="dropdown icon"></i>
-            {% else %}
-                <i class="icon"></i>
-            {% endif %}
+            <i class="{{ link.dirs is not empty ? 'dropdown' }} icon"></i>
             <a href="{{ link.full_path }}">
                 <i class="{{ ui_active ? 'orange folder open' : 'yellow folder' }} icon"></i>
                 {% if '/my_h5ai' ~ current_dir == link.full_path %}
