@@ -2,6 +2,12 @@
 require_once './.my_h5ai/vendor/autoload.php';
 require_once './.my_h5ai/H5AITwigExtension.php';
 
+/**
+ * Returns the list of directories and sub-directories of a given folder
+ * @param string $base_path
+ * @param string $path
+ * @return array
+ */
 function h5ai_get_directories(string $base_path, string $path = '')
 {
     $result = [];
@@ -26,6 +32,11 @@ function h5ai_get_directories(string $base_path, string $path = '')
     return $result;
 }
 
+/**
+ * Returns informations about every file/directory within a folder
+ * @param string $path
+ * @return array
+ */
 function h5ai_get_dir_contents(string $path)
 {
     $result = [];
@@ -61,7 +72,13 @@ function h5ai_get_dir_contents(string $path)
     return $result;
 }
 
-function h5ai_get_dir_size($directory)
+
+/**
+ * Returns the size of the contents of a directory
+ * @param string $directory
+ * @return false|int
+ */
+function h5ai_get_dir_size(string $directory)
 {
     $size = 0;
     if (($handle = opendir($directory)) !== false) {
@@ -76,27 +93,42 @@ function h5ai_get_dir_size($directory)
     return $size;
 }
 
+/**
+ * Converts a size in bytes to its representation in a closer unit
+ * @param int $size
+ * @return string
+ */
 function h5ai_format_filesize(int $size)
 {
-    $units = array( 'bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+    $units = array( ' bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
     $power = $size > 0 ? floor(log($size, 1024)) : 0;
-    return number_format($size / pow(1024, $power), 0, '.', ',') . ' ' . $units[$power];
+    return number_format($size / pow(1024, $power)). $units[$power];
 }
 
-// ===
+// Get the absolute directory that contains the current script.
 $script_dir = dirname(__FILE__);
-$relative_dir = str_replace($_SERVER['DOCUMENT_ROOT'], '', $script_dir);
-$dir_tree = h5ai_get_directories($_SERVER['DOCUMENT_ROOT'], $relative_dir);
-$dir_contents = h5ai_get_dir_contents($script_dir . $_SERVER['PATH_INFO']);
-// ===
 
+// Get its relative path to the DOCUMENT_ROOT.
+$relative_dir = str_replace($_SERVER['DOCUMENT_ROOT'], '', $script_dir);
+
+// Get the directory tree starting from the script's directory.
+$dir_tree = h5ai_get_directories($_SERVER['DOCUMENT_ROOT'], $relative_dir);
+
+// Get the directory content of the path passed in URL.
+$dir_contents = h5ai_get_dir_contents($script_dir . $_SERVER['PATH_INFO']);
+
+// Load the Twig environment & instantiates extension
 $loader = new Twig\Loader\FilesystemLoader('./.my_h5ai/templates/');
-$twig = new Twig\Environment($loader, [
-    'cache' => false ]);
+$twig = new Twig\Environment($loader, ['cache' => false ]);
 $twig->addExtension(new H5AITwigExtension());
 
+// Variables passed to template:
+// request_path -- The path passed to the script's URL (ex. index.php/my/directory/ => /my/directory/)
+// directory_tree -- The directory tree displayed on the left
+// current_dir -- The content of the current directory
+// path_breadcrumb -- An array of every parent directory up to the current one
+// relative_script_dir -- The relative path between DOCUMENT_ROOT and the script. Used for URL generation.
 echo $twig->render('index.html.twig', [
-    'server_addr' => $_SERVER['HTTP_REFERER'],
     'request_path' => $_SERVER['PATH_INFO'],
     'directory_tree' => $dir_tree,
     'current_dir' => $dir_contents,

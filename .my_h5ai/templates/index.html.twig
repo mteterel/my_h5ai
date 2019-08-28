@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My_H5AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ (path_breadcrumb|last is empty) ? relative_script_dir ~ '/' : path_breadcrumb|last }} - my_h5ai</title>
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
           integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
@@ -13,6 +14,7 @@
             padding: 0;
             margin: 0;
         }
+
         body {
             padding-top: 2rem;
         }
@@ -48,10 +50,16 @@
 
         #h5ai-raw-file-preview pre {
             overflow: auto;
-         }
+        }
 
         #h5ai-top-bar-breadcrumb {
             margin-left: 0.5em;
+        }
+
+        footer {
+            font-size: 0.9em;
+            color: #999;
+            text-align: center;
         }
     </style>
 </head>
@@ -95,7 +103,7 @@
                     <li>
                         <a href="{{ relative_script_dir ~ '/' }}">
                             <i class="orange open folder icon"></i>
-                            <span>/</span>
+                            <span>{{ relative_script_dir ~ '/' }}</span>
                         </a>
                         {% if directory_tree is not empty %}
                             {% include 'tree.html.twig' with { links: directory_tree, current_dir: request_path } %}
@@ -147,6 +155,9 @@
             {% endif %}
         </main>
     </div>
+    <footer class="sixteen wide column">
+        <p>Made by Mérill Téterel for Epitech.</p>
+    </footer>
 </div>
 <div id="h5ai-image-preview" class="ui basic modal">
     <i class="close icon"></i>
