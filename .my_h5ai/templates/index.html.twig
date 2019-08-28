@@ -211,6 +211,14 @@
     $('.h5ai-tree .tree-item.collapsible > .dropdown.icon').click(function() {
         $(this).parent('.tree-item.collapsible').toggleClass('active');
     });
+    $('#h5ai-audio-preview .close.icon').click(function() {
+        let audioElement = $("#h5ai-audio-preview audio").get(0);
+        audioElement.pause();
+    });
+    $('#h5ai-video-preview .close.icon').click(function() {
+        let videoElement = $("#h5ai-video-preview video").get(0);
+        videoElement.pause();
+    });
     $('.h5ai-item-previewable').click(function(e) {
         const SUPPORTED_PREVIEWS = [
             'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp',
