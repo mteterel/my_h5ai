@@ -69,7 +69,7 @@
                     </strong>
                 {% else %}
                     {% if path_breadcrumb is not empty %}
-                        <a href="{{ relative_script_dir }}"><i class="globe icon"></i></a>
+                        <a href="{{ relative_script_dir ~ '/' }}"><i class="globe icon"></i></a>
                         <div class="divider"> / </div>
                     {% endif %}
                     {% set bc_path = relative_script_dir ~ '/' %}
