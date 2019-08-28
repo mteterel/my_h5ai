@@ -7,7 +7,7 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
           integrity="sha256-9mbkOfVho3ZPXfM7W8sV2SndrGDuh7wuyLjtsWeTI1Q=" crossorigin="anonymous" />
     <link rel="stylesheet"
-          href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/atom-one-light.min.css">
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/atom-one-light.min.css">
     <style>
         * {
             padding: 0;
@@ -49,13 +49,19 @@
         #h5ai-raw-file-preview pre {
             overflow: auto;
          }
+
+        #h5ai-top-bar-breadcrumb {
+            margin-left: 0.5em;
+        }
     </style>
 </head>
 <body>
 <div class="ui stackable grid container">
     <div class="sixteen wide column">
         <div class="ui segment">
-            <div class="ui breadcrumb">
+            <button id="page-backward-btn" class="ui tiny icon button"><i class="left arrow icon"></i></button>
+            <button id="page-forward-btn" class="ui tiny icon button"><i class="right arrow icon"></i></button>
+            <div id="h5ai-top-bar-breadcrumb" class="ui breadcrumb">
                 {% if request_path == '/' %}
                     <strong>
                         <i class="globe icon"></i>
@@ -83,6 +89,7 @@
         </div>
     </div>
     <div class="five wide column">
+        <aside>
             <div class="h5ai-tree">
                 <ul>
                     <li>
@@ -106,7 +113,9 @@
                         No files are in this directory.
                     </div>
                     <a class="ui primary button" href="{{ '..' }}">
-                        <i class="left arrow icon"></i>To parent directory</a>
+                        <i class="left arrow icon"></i>
+                        <span>Go to parent directory</span>
+                    </a>
                 </div>
             {% elseif current_dir is not empty %}
                 <table class="ui very basic sortable selectable table">
@@ -126,11 +135,11 @@
                                     <a href="{{ entry.name }}">{{ entry.name }}</a>
                                 {% else %}
                                     <i class="{{ entry.name|file_icon }} icon"></i>
-                                    <a href="{{ entry.name }}" class="h5ai-item-previable" data-filename="{{ entry.name }}">{{ entry.name }}</a>
+                                    <a href="{{ entry.name }}" class="h5ai-item-previewable" data-filename="{{ entry.name }}">{{ entry.name }}</a>
                                 {% endif %}
                             </td>
-                            <td>{{ entry.mtime|date }}</td>
-                            <td>{{ entry.size }}</td>
+                            <td data-sort-value="{{ entry.mtime }}">{{ entry.mtime|date }}</td>
+                            <td data-sort-value="{{ entry.size_unformatted }}">{{ entry.size }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -139,18 +148,29 @@
         </main>
     </div>
 </div>
-<div id="h5ai-image-preview" class="ui small modal">
+<div id="h5ai-image-preview" class="ui basic modal">
     <i class="close icon"></i>
     <div class="header"></div>
     <div class="image content">
         <img class="ui fluid image">
     </div>
 </div>
-<div id="h5ai-raw-file-preview" class="ui modal">
+<div id="h5ai-raw-file-preview" class="ui basic modal">
     <i class="close icon"></i>
     <div class="header"></div>
     <div class="content">
         <pre><code></code></pre>
+    </div>
+</div>
+<div id="h5ai-video-preview" class="ui basic modal">
+    <i class="close icon"></i>
+    <video width="100%" height="100%" controls>
+        <source src="">
+    </video>
+</div>
+<div id="h5ai-loading-box">
+    <div class="ui dimmer">
+        <div class="ui large text loader">Loading</div>
     </div>
 </div>
 <script
@@ -168,8 +188,8 @@
     $('.h5ai-tree .tree-item.collapsible > .dropdown.icon').click(function() {
         $(this).parent('.tree-item.collapsible').toggleClass('active');
     });
-    $('.h5ai-item-previable').click(async function(e) {
-        const SUPPORTED_PREVIEWS = ['jpg', 'jpeg', 'png', 'gif', 'txt', 'json', 'xml'];
+    $('.h5ai-item-previewable').click(function(e) {
+        const SUPPORTED_PREVIEWS = ['jpg', 'jpeg', 'png', 'gif', 'txt', 'json', 'xml', 'mp4'];
         const fileExtension = $(this).attr('data-filename').split('.').pop();
         if (SUPPORTED_PREVIEWS.includes(fileExtension)) {
             e.preventDefault();
@@ -180,15 +200,36 @@
             }
             else if(['txt', 'json', 'xml'].includes(fileExtension)) {
                 $('#h5ai-raw-file-preview > .header').text($(this).attr('data-filename'));
-                let data = await (await fetch($(this).attr('data-filename'))).text();
-                let previewElement = $('#h5ai-raw-file-preview');
-                let codeElement = previewElement.find('code');
-                codeElement.text(data);
-                let hlData = hljs.highlightAuto(codeElement.text()).value;
-                codeElement.html(hlData);
-                previewElement.modal('show');
+
+                let loadingDiv = $("#h5ai-loading-box");
+                loadingDiv.find('.ui.dimmer').addClass('active');
+
+                fetch($(this).attr('data-filename')).then(function(response) {
+                    response.text().then(function(data) {
+                        let previewElement = $('#h5ai-raw-file-preview');
+                        let codeElement = previewElement.find('code');
+                        codeElement.text(data);
+                        let hlData = hljs.highlightAuto(codeElement.text()).value;
+                        codeElement.html(hlData);
+                        loadingDiv.find('.ui.dimmer').removeClass('active');
+                        previewElement.modal('show');
+                    });
+                })
+            }
+            else if(['mp4'].includes(fileExtension)) {
+                $('#h5ai-video-preview video source').attr('src', $(this).attr('data-filename'));
+                $('#h5ai-video-preview').modal('show');
+                $('#h5ai-video-preview video').get(0).load();
+                $('#h5ai-video-preview video').get(0).play();
             }
         }
+    });
+
+    $("#page-backward-btn").click(function () {
+        window.history.back();
+    });
+    $('#page-forward-btn').click(function() {
+        window.history.forward();
     });
 </script>
 </body>

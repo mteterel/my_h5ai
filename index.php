@@ -38,7 +38,8 @@ function h5ai_get_dir_contents(string $path)
                 $result[$entry]['name'] = $entry;
                 $result[$entry]['type'] = 'file';
                 $result[$entry]['mtime'] = filemtime($full_path);
-                $result[$entry]['size'] = h5ai_format_filesize(filesize($full_path));
+                $result[$entry]['size_unformatted'] = filesize($full_path);
+                $result[$entry]['size'] = h5ai_format_filesize($result[$entry]['size_unformatted']);
             }
             elseif (is_dir($full_path) && $entry !== '.') {
                 if ($entry[0] === '.' && $entry != '..')
@@ -46,8 +47,10 @@ function h5ai_get_dir_contents(string $path)
                 $result[$entry]['name'] = $entry;
                 $result[$entry]['type'] = 'directory';
                 $result[$entry]['mtime'] = filemtime($full_path);
-                if ($entry !== '..')
-                    $result[$entry]['size'] = h5ai_format_filesize(h5ai_get_dir_size($full_path));
+                if ($entry !== '..') {
+                    $result[$entry]['size_unformatted'] = h5ai_get_dir_size($full_path);
+                    $result[$entry]['size'] = h5ai_format_filesize($result[$entry]['size_unformatted']);
+                }
             }
         }
         closedir($handle);
@@ -91,7 +94,9 @@ $loader = new Twig\Loader\FilesystemLoader('./.my_h5ai/templates/');
 $twig = new Twig\Environment($loader, [
     'cache' => false ]);
 $twig->addExtension(new H5AITwigExtension());
+
 echo $twig->render('index.html.twig', [
+    'server_addr' => $_SERVER['HTTP_REFERER'],
     'request_path' => $_SERVER['PATH_INFO'],
     'directory_tree' => $dir_tree,
     'current_dir' => $dir_contents,
