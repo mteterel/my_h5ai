@@ -49,20 +49,23 @@ class H5AITwigExtension extends AbstractExtension
             case 'wmv':
             case 'wav':
             case 'mp3':
-                return 'file audio outline';
+                return 'pink music';
             case 'zip':
             case 'tar':
                 return 'brown archive file';
             case 'pdf':
                 return 'red pdf file';
             case 'mp4':
-                return 'file video outline';
+            case 'webm':
+                return 'purple video';
             case 'png':
             case 'jpg':
             case 'jpeg':
             case 'gif':
             case 'bmp':
-                return 'file image outline';
+            case 'svg':
+            case 'webp':
+                return 'image outline';
             case 'txt':
                 return 'file alternate outline';
             default:

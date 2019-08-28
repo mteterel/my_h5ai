@@ -175,9 +175,21 @@
 </div>
 <div id="h5ai-video-preview" class="ui basic modal">
     <i class="close icon"></i>
-    <video width="100%" height="100%" controls>
-        <source src="">
-    </video>
+    <div class="header"></div>
+    <div class="content">
+        <video width="100%" height="100%" controls>
+            <source src="">
+        </video>
+    </div>
+</div>
+<div id="h5ai-audio-preview" class="ui basic modal">
+    <i class="close icon"></i>
+    <div class="header"></div>
+    <div class="content">
+        <audio style="width: 100%;" controls>
+            <source src="">
+        </audio>
+    </div>
 </div>
 <div id="h5ai-loading-box">
     <div class="ui dimmer">
@@ -200,16 +212,21 @@
         $(this).parent('.tree-item.collapsible').toggleClass('active');
     });
     $('.h5ai-item-previewable').click(function(e) {
-        const SUPPORTED_PREVIEWS = ['jpg', 'jpeg', 'png', 'gif', 'txt', 'json', 'xml', 'mp4'];
+        const SUPPORTED_PREVIEWS = [
+            'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp',
+            'txt', 'json', 'xml', 'css', 'js',
+            'mp4', 'webm',
+            'mp3'
+        ];
         const fileExtension = $(this).attr('data-filename').split('.').pop();
         if (SUPPORTED_PREVIEWS.includes(fileExtension)) {
             e.preventDefault();
-            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(fileExtension)) {
                 $('#h5ai-image-preview > .header').text($(this).attr('data-filename'));
                 $('#h5ai-image-preview img').attr('src', $(this).attr('data-filename'));
                 $('#h5ai-image-preview').modal('show');
             }
-            else if(['txt', 'json', 'xml'].includes(fileExtension)) {
+            else if(['txt', 'json', 'xml', 'css', 'js'].includes(fileExtension)) {
                 $('#h5ai-raw-file-preview > .header').text($(this).attr('data-filename'));
 
                 let loadingDiv = $("#h5ai-loading-box");
@@ -227,11 +244,17 @@
                     });
                 })
             }
-            else if(['mp4'].includes(fileExtension)) {
+            else if(['mp4', 'webp'].includes(fileExtension)) {
                 $('#h5ai-video-preview video source').attr('src', $(this).attr('data-filename'));
                 $('#h5ai-video-preview').modal('show');
                 $('#h5ai-video-preview video').get(0).load();
                 $('#h5ai-video-preview video').get(0).play();
+            }
+            else if (['mp3'].includes(fileExtension)) {
+                $('#h5ai-audio-preview audio source').attr('src', $(this).attr('data-filename'));
+                $('#h5ai-audio-preview').modal('show');
+                $('#h5ai-audio-preview audio').get(0).load();
+                $('#h5ai-audio-preview audio').get(0).play();
             }
         }
     });
