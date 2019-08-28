@@ -245,12 +245,14 @@
                 })
             }
             else if(['mp4', 'webp'].includes(fileExtension)) {
+                $('#h5ai-video-preview > .header').text($(this).attr('data-filename'));
                 $('#h5ai-video-preview video source').attr('src', $(this).attr('data-filename'));
                 $('#h5ai-video-preview').modal('show');
                 $('#h5ai-video-preview video').get(0).load();
                 $('#h5ai-video-preview video').get(0).play();
             }
             else if (['mp3'].includes(fileExtension)) {
+                $('#h5ai-audio-preview > .header').text($(this).attr('data-filename'));
                 $('#h5ai-audio-preview audio source').attr('src', $(this).attr('data-filename'));
                 $('#h5ai-audio-preview').modal('show');
                 $('#h5ai-audio-preview audio').get(0).load();
