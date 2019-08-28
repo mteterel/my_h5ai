@@ -219,15 +219,16 @@
             'mp3'
         ];
         const fileExtension = $(this).attr('data-filename').split('.').pop();
+        const fileLink = $(this).attr('href');
         if (SUPPORTED_PREVIEWS.includes(fileExtension)) {
             e.preventDefault();
             if (['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'].includes(fileExtension)) {
-                $('#h5ai-image-preview > .header').text($(this).attr('data-filename'));
-                $('#h5ai-image-preview img').attr('src', $(this).attr('data-filename'));
+                $('#h5ai-image-preview > .header').text(fileLink);
+                $('#h5ai-image-preview img').attr('src', fileLink);
                 $('#h5ai-image-preview').modal('show');
             }
             else if(['txt', 'json', 'xml', 'css', 'js'].includes(fileExtension)) {
-                $('#h5ai-raw-file-preview > .header').text($(this).attr('data-filename'));
+                $('#h5ai-raw-file-preview > .header').text(fileLink);
 
                 let loadingDiv = $("#h5ai-loading-box");
                 loadingDiv.find('.ui.dimmer').addClass('active');
@@ -245,15 +246,15 @@
                 })
             }
             else if(['mp4', 'webp'].includes(fileExtension)) {
-                $('#h5ai-video-preview > .header').text($(this).attr('data-filename'));
-                $('#h5ai-video-preview video source').attr('src', $(this).attr('data-filename'));
+                $('#h5ai-video-preview > .header').text(fileLink);
+                $('#h5ai-video-preview video source').attr('src', fileLink);
                 $('#h5ai-video-preview').modal('show');
                 $('#h5ai-video-preview video').get(0).load();
                 $('#h5ai-video-preview video').get(0).play();
             }
             else if (['mp3'].includes(fileExtension)) {
-                $('#h5ai-audio-preview > .header').text($(this).attr('data-filename'));
-                $('#h5ai-audio-preview audio source').attr('src', $(this).attr('data-filename'));
+                $('#h5ai-audio-preview > .header').text(fileLink);
+                $('#h5ai-audio-preview audio source').attr('src', fileLink);
                 $('#h5ai-audio-preview').modal('show');
                 $('#h5ai-audio-preview audio').get(0).load();
                 $('#h5ai-audio-preview audio').get(0).play();
