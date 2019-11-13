@@ -23,6 +23,10 @@
 		    background-color: #121212;
 		    color: white;
         }
+        
+        body.inverted > #h5ai-container.inverted {
+            background-color: #292929;
+        }
 
         .h5ai-tree {
             overflow: auto;
@@ -69,7 +73,7 @@
     </style>
 </head>
 <body>
-<div class="ui stackable grid container">
+<div id="h5ai-container" class="ui stackable grid container">
     <div class="sixteen wide column">
         <div id="h5ai-top-bar" class="ui segment">
             <button id="page-backward-btn" class="ui tiny icon compact button"><i class="left arrow icon"></i></button>
@@ -295,6 +299,7 @@
             $('#h5ai-top-bar').addClass('inverted');
             $('#page-backward-btn').addClass('black');
             $('#page-forward-btn').addClass('black');
+            $('#h5ai-container').addClass('inverted');
             $('#h5ai-dir-table').addClass('inverted');
             $('#h5ai-empty-dir').addClass('inverted');
             $('#dark-mode-icon').removeClass('moon outline').addClass('sun outline');
@@ -306,6 +311,7 @@
             $('#h5ai-top-bar').removeClass('inverted');
             $('#page-backward-btn').removeClass('black');
             $('#page-forward-btn').removeClass('black');
+            $('#h5ai-container').removeClass('inverted');
             $('#h5ai-dir-table').removeClass('inverted');
             $('#h5ai-empty-dir').removeClass('inverted');
             $('#dark-mode-icon').removeClass('sun outline').addClass('moon outline');
